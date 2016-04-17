@@ -14,4 +14,4 @@ Spoiler alert: Crude draft, pre-pre-pre-alpha
 Yup, been there didn't like it major deal breaker was screen flickering and (for me) insufficient rendering performance
 
 **Can you add {insert feature}**
-A: Nope, this library focuses only on barebone bootstrap of terminal application, everything else should be done with composition and custom code
+Nope, this library focuses only on barebone bootstrap of terminal application, everything else should be done with composition and custom code
