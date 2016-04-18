@@ -314,8 +314,8 @@ class VerticalSplitScreen(SplitScreen):
         self.top_half = top_half
         self.bottom_half = bottom_half
 
-        self.a.onResize(x, y, w, self.top_half)
-        self.b.onResize(x, y + self.top_half, w, self.bottom_half)
+        call(self.a, 'onResize', x, y, w, self.top_half)
+        call(self.b, 'onResize', x, y + self.top_half, w, self.bottom_half)
 
     def render(self):
         out = []
