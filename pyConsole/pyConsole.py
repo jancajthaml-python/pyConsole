@@ -8,6 +8,7 @@ import fcntl
 import termios
 import struct
 
+from .utils import publish
 from layout import MainScreen
 
 
@@ -36,15 +37,17 @@ if w_flags & block:
     fcntl.fcntl(w, fcntl.F_SETFL, w_flags | block)
 
 
-def start(screen):
-    mainScreen = MainScreen(screen)
+def init():
+    MainScreen()
 
-    def resize(*args):
-        h, w, hp, wp = struct.unpack('HHHH', fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))  # noqa
-        # fixme change to even
-        mainScreen.onResize(0, 0, w, h)
 
-    # fixme publish event
+def resize(*args):
+    h, w, hp, wp = struct.unpack('HHHH', fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))  # noqa
+    publish('resize', 0, 0, w, h)
+
+
+def start():
+
     signal.signal(signal.SIGWINCH, resize)
 
     try:
@@ -65,12 +68,12 @@ def start(screen):
                         signal.setitimer(signal.ITIMER_REAL, 0)
                         if b == '[':
                             c = sys.stdin.read(1)
-                            mainScreen.onKeyDown(a + b + c)
+                            publish('key_down', a + b + c)
                         else:
                             break
                         continue
                     else:
-                        mainScreen.onKeyDown(a)
+                        publish('key_down', a)
                 except IOError:
                     pass
                 except ExitException:

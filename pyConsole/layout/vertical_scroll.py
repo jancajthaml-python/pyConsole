@@ -1,6 +1,3 @@
-from ..utils import publish
-
-
 class VerticalScrollableScreen(object):
 
     def __init__(self, data):
@@ -15,6 +12,15 @@ class VerticalScrollableScreen(object):
         self.focus = False
 
         # fixme add pointer to selected item
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        del self.data
+
+    def __del__(self):
+        del self.data
 
     def onScroll(self, direction):
         if self.focus:

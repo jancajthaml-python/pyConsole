@@ -1,8 +1,10 @@
-import gevent
+# import gevent
 
 from pyConsole import VerticalSplitScreen
 from pyConsole import HorizontalSplitScreen
 from pyConsole import VerticalScrollableScreen
+from pyConsole import init
+from pyConsole import resize
 from pyConsole import start
 from pyConsole import publish
 from pyConsole import subscribe
@@ -13,7 +15,7 @@ class Menu(VerticalScrollableScreen):
     def onKeyDown(self, key):
         if self.focus:
             if key == '\n':
-                publish('event', 'enter over [{0}]'.format(self.selected))
+                publish('build_screen', self.selected)
 
 
 class Header(object):
@@ -85,24 +87,12 @@ if __name__ == '__main__':
     # screen buffer seek test
     big_data = [
         {
-            'id': 'b_{0}'.format(i + 1),
-            'label': 'B-{0}'.format(i + 1)
+            'id': 'line_{0}'.format(i + 1),
+            'label': 'Line number {0}'.format(i + 1)
         } for i in range(0, 2000, 1)
     ]
 
-    # 100MB data test
-    # big_data = [bytes("1")] * 5 * 10**7
-
-    # with open("100MB.txt", "w") as text_file:
-    # text_file.write('\n'.join(big_data))
-
-    header = Header()
-    header.height = 2
-
-    footer = Footer()
-    footer.height = 2
-
-    left_list = Menu([
+    menu_items = [
         {
             'id': 'item_1',
             'label': 'Item 1'
@@ -119,32 +109,42 @@ if __name__ == '__main__':
             'id': 'item_4',
             'label': 'Item 4'
         }
-    ])
+    ]
+    header = Header()
+    header.height = 2
+
+    footer = Footer()
+    footer.height = 2
+
+    left_list = Menu(menu_items)
     left_list.width = 10
 
-    screen = VerticalSplitScreen(
-        top=header,
-        bottom=VerticalSplitScreen(
-            top=HorizontalSplitScreen(
-                left=left_list,
-                right=VerticalScrollableScreen(big_data),
-            ),
-            bottom=footer
-        )
-    )
+    def build_screen(item):
+        selected_item = menu_items[next(index for (index, d) in enumerate(menu_items) if d['id'] == item)]  # noqa
 
-    def task():
-        while True:
-            publish('event', 'key[ping]')
-            publish('repaint')
-            # gevent.sleep(1)
-            gevent.sleep(0.1)
+        # label = menu_items[]
+        big_data = [
+            {
+                'id': '{0}_line_{1}'.format(selected_item['id'], i + 1),
+                'label': '{0} -> {1}'.format(selected_item['label'], i + 1)
+            } for i in range(0, 2000, 1)
+        ]
+        publish('set_screen', VerticalSplitScreen(
+            top=header,
+            bottom=VerticalSplitScreen(
+                top=HorizontalSplitScreen(
+                    left=left_list,
+                    right=VerticalScrollableScreen(big_data),
+                ),
+                bottom=footer
+            )
+        ))
+        resize()
 
-    # def asynchronous():
+    init()
 
-    # gevent.joinall([
-    #    gevent.spawn(task),
-    #    gevent.spawn(start, screen)
-    #])
+    subscribe('build_screen', build_screen)
 
-    start(screen)
+    publish('build_screen', 'item_1')
+
+    start()

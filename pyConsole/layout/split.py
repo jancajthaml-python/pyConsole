@@ -12,6 +12,15 @@ class SplitScreen(object):
         self.a = kwargs.get('left', None) or kwargs.get('top', None)
         self.b = kwargs.get('right', None) or kwargs.get('bottom', None)
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        if self.a:
+            del self.a
+        if self.b:
+            del self.b
+
     def hasFocus(self):
         return call(self.a, 'hasFocus') or\
             call(self.b, 'hasFocus')

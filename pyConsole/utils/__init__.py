@@ -2,6 +2,11 @@
 subscriptions = {}
 
 
+def unsubscribe(message, subscriber):
+    if message in subscriptions and subscriber in subscriptions[message]:
+        subscriptions[message].remove(subscriber)
+
+
 def subscribe(message, subscriber):
     if message not in subscriptions:
         subscriptions[message] = [subscriber]
