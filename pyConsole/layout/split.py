@@ -1,8 +1,6 @@
 from ..utils import call
 from ..utils import publish
 
-from .void import VoidScreen
-
 
 class SplitScreen(object):
 
@@ -11,8 +9,8 @@ class SplitScreen(object):
         self.y = 0
         self.width = 0
         self.height = 0
-        self.a = kwargs.get('left', None) or kwargs.get('top', None) or VoidScreen()  # noqa
-        self.b = kwargs.get('right', None) or kwargs.get('bottom', None) or VoidScreen()  # noqa
+        self.a = kwargs.get('left', None) or kwargs.get('top', None)
+        self.b = kwargs.get('right', None) or kwargs.get('bottom', None)
 
     def hasFocus(self):
         return call(self.a, 'hasFocus') or\
