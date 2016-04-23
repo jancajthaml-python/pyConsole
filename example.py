@@ -76,10 +76,10 @@ class Footer(object):
 
 def main():
     # screen bleeding and multiline strings test
-    big_data = [' B-{0}'.format('{0}'.format(i % 10) * ((i + 1) % 200)) for i in range(0, 1000, 1)]  # noqa
+    # big_data = [' B-{0}'.format('{0}'.format(i % 10) * ((i + 1) % 200)) for i in range(0, 1000, 1)]  # noqa
 
     # screen buffer seek test
-    # big_data = [' B-{0}'.format(i + 1) for i in range(0, 2000, 1)]
+    big_data = [' B-{0}'.format(i + 1) for i in range(0, 2000, 1)]
 
     # 100MB data test
     # big_data = [bytes("1")] * 5 * 10**7
@@ -98,7 +98,7 @@ def main():
         'Item 2',
         'Item 3'
     ])
-    left_list.width = 30
+    left_list.width = 20
 
     screen = VerticalSplitScreen(
         top=header,

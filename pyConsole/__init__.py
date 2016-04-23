@@ -1,7 +1,9 @@
 
-from .pyConsole import VerticalSplitScreen
-from .pyConsole import HorizontalSplitScreen
-from .pyConsole import VerticalScrollableScreen
+from layout import VerticalSplitScreen
+from layout import HorizontalSplitScreen
+from layout import VerticalScrollableScreen
+
+from utils import publish
+from utils import subscribe
+
 from .pyConsole import start
-from .pyConsole import publish
-from .pyConsole import subscribe
