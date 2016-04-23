@@ -1,9 +1,8 @@
-# import gevent
-
 from pyConsole import VerticalSplitScreen
 from pyConsole import HorizontalSplitScreen
 from pyConsole import VerticalScrollableScreen
-from pyConsole import init
+from pyConsole import before_enter
+from pyConsole import before_exit
 from pyConsole import resize
 from pyConsole import start
 from pyConsole import publish
@@ -122,7 +121,6 @@ if __name__ == '__main__':
     def build_screen(item):
         selected_item = menu_items[next(index for (index, d) in enumerate(menu_items) if d['id'] == item)]  # noqa
 
-        # label = menu_items[]
         big_data = [
             {
                 'id': '{0}_line_{1}'.format(selected_item['id'], i + 1),
@@ -141,10 +139,12 @@ if __name__ == '__main__':
         ))
         resize()
 
-    init()
+    before_enter()
 
     subscribe('build_screen', build_screen)
 
     publish('build_screen', 'item_1')
 
     start()
+
+    before_exit()

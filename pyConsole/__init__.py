@@ -8,5 +8,7 @@ from utils import subscribe
 from utils import unsubscribe
 
 from .pyConsole import start
-from .pyConsole import init
 from .pyConsole import resize
+
+from .pyConsole import before_enter
+from .pyConsole import before_exit

@@ -37,8 +37,13 @@ if w_flags & block:
     fcntl.fcntl(w, fcntl.F_SETFL, w_flags | block)
 
 
-def init():
+def before_enter():
+    sys.stdout.write('\033[?1049h\033[?25l')
     MainScreen()
+
+
+def before_exit():
+    sys.stdout.write('\033[?1049l\033[?25h')
 
 
 def resize(*args):
@@ -51,7 +56,6 @@ def start():
     signal.signal(signal.SIGWINCH, resize)
 
     try:
-        sys.stdout.write('\033[?1049h\033[?25l')
         resize()
         r_old = termios.tcgetattr(r)
         r_new = termios.tcgetattr(r)
@@ -85,4 +89,3 @@ def start():
     finally:
         fcntl.fcntl(r, fcntl.F_SETFL, r_flags)
         fcntl.fcntl(w, fcntl.F_SETFL, w_flags)
-        sys.stdout.write('\033[?1049l\033[?25h')
