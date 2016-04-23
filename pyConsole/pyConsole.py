@@ -41,6 +41,7 @@ def start(screen):
 
     def resize(*args):
         h, w, hp, wp = struct.unpack('HHHH', fcntl.ioctl(0, termios.TIOCGWINSZ, struct.pack('HHHH', 0, 0, 0, 0)))  # noqa
+        # fixme change to even
         mainScreen.onResize(0, 0, w, h)
 
     # fixme publish event

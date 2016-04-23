@@ -10,7 +10,7 @@ class VerticalScrollableScreen(object):
         self.height = 0
         # fixme change to setData and preparse in that method
         self.data = data
-
+        self.selected = None
         self.yOffset = 0
         self.focus = False
 
@@ -30,8 +30,7 @@ class VerticalScrollableScreen(object):
         self.y = y
 
     def onKeyDown(self, key):
-        if self.focus:
-            publish('event', 'key[{0}]'.format(repr(key)))
+        pass
 
     def onBlur(self):
         self.focus = False
@@ -47,7 +46,7 @@ class VerticalScrollableScreen(object):
     def render(self, canvas, x, y):
         w = self.width
         h = self.height
-
+        self.selected = None
         start = max(0, min(len(self.data) - h, len(self.data) - (h / 2) - self.yOffset))  # noqa
         end = min(len(self.data), start + h)
 
@@ -72,11 +71,12 @@ class VerticalScrollableScreen(object):
             if total_lines < h:
                 if total_lines == cursor:
                     if self.focus:
-                        line = draw_selected_focus(line)
+                        self.selected = line['id']
+                        line = draw_selected_focus(' ' + line['label'] + ' ')
                     else:
-                        line = draw_selected_blur(line)
+                        line = draw_selected_blur(' ' + line['label'] + ' ')
                 else:
-                    line = draw_unselected(line)
+                    line = draw_unselected(' ' + line['label'] + ' ')
 
                 canvas.append('\033[{1};{0}H{2}'.format(x, y + total_lines, line))  # noqa
                 return True

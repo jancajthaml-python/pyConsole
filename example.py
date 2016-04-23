@@ -1,3 +1,4 @@
+import gevent
 
 from pyConsole import VerticalSplitScreen
 from pyConsole import HorizontalSplitScreen
@@ -5,6 +6,14 @@ from pyConsole import VerticalScrollableScreen
 from pyConsole import start
 from pyConsole import publish
 from pyConsole import subscribe
+
+
+class Menu(VerticalScrollableScreen):
+
+    def onKeyDown(self, key):
+        if self.focus:
+            if key == '\n':
+                publish('event', 'enter over [{0}]'.format(self.selected))
 
 
 class Header(object):
@@ -69,12 +78,17 @@ class Footer(object):
         canvas.append('\033[{1};{0}H{2}'.format(x, self.height - 1 + self.y, title))  # noqa
 
 
-def main():
+if __name__ == '__main__':
     # screen bleeding and multiline strings test
     # big_data = [' B-{0}'.format('{0}'.format(i % 10) * ((i + 1) % 200)) for i in range(0, 1000, 1)]  # noqa
 
     # screen buffer seek test
-    big_data = [' B-{0}'.format(i + 1) for i in range(0, 2000, 1)]
+    big_data = [
+        {
+            'id': 'b_{0}'.format(i + 1),
+            'label': 'B-{0}'.format(i + 1)
+        } for i in range(0, 2000, 1)
+    ]
 
     # 100MB data test
     # big_data = [bytes("1")] * 5 * 10**7
@@ -88,12 +102,25 @@ def main():
     footer = Footer()
     footer.height = 2
 
-    left_list = VerticalScrollableScreen([
-        'Item 1',
-        'Item 2',
-        'Item 3'
+    left_list = Menu([
+        {
+            'id': 'item_1',
+            'label': 'Item 1'
+        },
+        {
+            'id': 'item_2',
+            'label': 'Item 2'
+        },
+        {
+            'id': 'item_3',
+            'label': 'Item 3'
+        },
+        {
+            'id': 'item_4',
+            'label': 'Item 4'
+        }
     ])
-    left_list.width = 50
+    left_list.width = 10
 
     screen = VerticalSplitScreen(
         top=header,
@@ -106,7 +133,18 @@ def main():
         )
     )
 
-    start(screen)
+    def task():
+        while True:
+            publish('event', 'key[ping]')
+            publish('repaint')
+            # gevent.sleep(1)
+            gevent.sleep(0.1)
 
-if __name__ == '__main__':
-    main()
+    # def asynchronous():
+
+    # gevent.joinall([
+    #    gevent.spawn(task),
+    #    gevent.spawn(start, screen)
+    #])
+
+    start(screen)
