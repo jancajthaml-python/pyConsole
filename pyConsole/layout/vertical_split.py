@@ -38,22 +38,6 @@ class VerticalSplitScreen(SplitScreen):
         call(self.a, 'onResize', x, y, w, self.top_half)
         call(self.b, 'onResize', x, y + self.top_half, w, self.bottom_half)
 
-    def render(self):
-        out = []
-
-        index = self.y
-
-        a = call(self.a, 'render') or []
-        b = call(self.b, 'render') or []
-
-        for item in a:
-            index += 1
-            out.append(u'\033[{1};{0}H{2}'.format(self.x, index, item))  # noqa
-
-        index = self.y
-
-        for item in b:
-            index += 1
-            out.append(u'\033[{1};{0}H{2}'.format(self.x, index + self.top_half, item))  # noqa
-
-        return out
+    def render(self, canvas, x, y):
+        self.a.render(canvas, self.x, self.y)
+        self.b.render(canvas, self.x, self.y + self.top_half)

@@ -1,4 +1,4 @@
-import itertools
+# import itertools
 
 from ..utils import call
 
@@ -40,19 +40,6 @@ class HorizontalSplitScreen(SplitScreen):
         call(self.a, 'onResize', x, y, self.left_half, h)
         call(self.b, 'onResize', x + self.left_half, y, self.right_half, h)
 
-    def render(self):
-        out = []
-
-        index = self.y
-
-        a = self.a.render()
-        b = self.b.render()
-
-        for left, right in itertools.izip_longest(a, b):
-            index += 1
-            if left:
-                out.append(u'\033[{1};{0}H{2}'.format(self.x, index, left))  # noqa
-            if right:
-                out.append(u'\033[{1};{0}H{2}'.format(self.x + self.left_half, index, right))  # noqa
-
-        return out
+    def render(self, canvas, x, y):
+        self.a.render(canvas, self.x, self.y)
+        self.b.render(canvas, self.x + self.left_half, self.y)

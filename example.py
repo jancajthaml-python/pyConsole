@@ -23,17 +23,14 @@ class Header(object):
     def onResize(self, x, y, w, h):
         self.width = w
         self.height = h
+        self.x = x
+        self.y = y
 
-    def render(self):
+    def render(self, canvas, x, y):
         filler = ' ' * self.width
         title = ' ' + self.title
-
-        out = [
-            '\033[5;30;47m' + (title + filler[:-len(title)]) + '\033[0m'
-        ]
-        out.extend([filler] * (self.height - 1))
-
-        return out
+        title = '\033[5;30;47m' + (title + filler[:-len(title)]) + '\033[0m'  # noqa
+        canvas.append('\033[{1};{0}H{2}'.format(x, y, title))
 
 
 class Footer(object):
@@ -61,17 +58,15 @@ class Footer(object):
     def onResize(self, x, y, w, h):
         self.width = w
         self.height = h
+        self.x = x
+        self.y = y
 
-    def render(self):
+    def render(self, canvas, x, y):
         filler = ' ' * self.width
         title = '\033[7;32m ' + self.title + '\033[0;31m ' + ', '.join(reversed(self.events))  # noqa
-
-        out = [filler] * (self.height - 1)
-        out.append(
-            title + filler[:-(len(title) - 14)]
-        )
-
-        return out
+        title = title + filler[:-len(title)]
+        title = title[:min(self.width, len(title))] + '\033[0m'
+        canvas.append('\033[{1};{0}H{2}'.format(x, self.height - 1 + self.y, title))  # noqa
 
 
 def main():
@@ -98,7 +93,7 @@ def main():
         'Item 2',
         'Item 3'
     ])
-    left_list.width = 20
+    left_list.width = 50
 
     screen = VerticalSplitScreen(
         top=header,

@@ -11,5 +11,5 @@ class VoidScreen(object):
         self.width = w
         self.height = h
 
-    def render(self):
+    def render(self, canvas):
         return [(' ' * self.width)] * (self.height)

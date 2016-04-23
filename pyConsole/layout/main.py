@@ -1,4 +1,6 @@
 import sys
+# import itertools
+# import numpy
 
 from ..utils import subscribe
 
@@ -21,13 +23,10 @@ class MainScreen(object):
         self.width = w
         self.height = h
 
-        self.content.onResize(x + 2, y + 1, w - 2, h - 2)
+        self.content.onResize(x + 2, y + 2, w - 2, h - 2)
 
-        self.clear = ''.join([
-            '\033[{0};0H\033[0m \033[{0};{1}H\033[0m '.format(i, self.width) for i in xrange(1, self.height + 2)  # noqa
-        ]) + '\033[1;2H\033[0m{1}\033[{0};2H\033[0m{1}'.format(self.height, ' ' * (self.width - 1))  # noqa
-
-        # fixme change to publish repaint
+        sys.stdout.write('\033[H\033[J\033[H')
+        # self.clear = '\033[H\033[J\033[H'
         self.render()
 
     def onKeyDown(self, key):
@@ -36,4 +35,6 @@ class MainScreen(object):
             self.render()
 
     def render(self):
-        sys.stdout.write(''.join(self.content.render()) + self.clear)
+        self.buffer = []
+        self.content.render(self.buffer, 0, 0)
+        sys.stdout.write(''.join(self.buffer))  # noqa

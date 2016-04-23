@@ -44,80 +44,48 @@ class VerticalScrollableScreen(object):
     def hasFocus(self):
         return self.focus
 
-    def render(self):
+    def render(self, canvas, x, y):
         w = self.width
         h = self.height
-
-        # def preprocess_data(data):
-
-        # data = preprocess_data(self.data)
 
         start = max(0, min(len(self.data) - h, len(self.data) - (h / 2) - self.yOffset))  # noqa
         end = min(len(self.data), start + h)
 
         cursor = (len(self.data) - self.yOffset - 1) - start
 
-        view = []
-        pointer = 0
         total_lines = 0
 
         i = start
 
-        # firstly chunk lines by width
+        fill = ' ' * w
 
-        # then recalculate start and end if neccessary
+        def draw_selected_focus(line):
+            return '\033[0;37;41m{0}\033[0m'.format(line[:w] + fill[:-len(line)])  # noqa
 
-        # then iterate them
+        def draw_selected_blur(line):
+            return '\033[0;37;40m{0}\033[0m'.format(line[:w] + fill[:-len(line)])  # noqa
+
+        def draw_unselected(line):
+            return line[:w] + fill[:-len(line)]
 
         def draw_line(line):
-            if not len(line):
-                line = (' ' * w)
-            elif len(line) < w:
-                line = line + (' ' * w)[:-len(line)]
-
-            # remove does not work for multiline string
             if total_lines < h:
-                if pointer == cursor:
+                if total_lines == cursor:
                     if self.focus:
-                        view.append('\033[41m\033[37m{0}\033[0m'.format(line))  # noqa
+                        line = draw_selected_focus(line)
                     else:
-                        view.append('\033[40m\033[37m{0}\033[0m'.format(line))  # noqa
+                        line = draw_selected_blur(line)
                 else:
-                    view.append(line)
+                    line = draw_unselected(line)
+
+                canvas.append('\033[{1};{0}H{2}'.format(x, y + total_lines, line))  # noqa
                 return True
             else:
                 return False
 
         while True:
-            if i >= end:
+            if i >= end or not draw_line(self.data[i]):
                 break
 
-            line = self.data[i]
-
-            if len(line) < w:
-                if not draw_line(line + (' ' * w)[:-len(line)]):
-                    break
-                total_lines += 1
-                pointer += 1
-            elif len(line) > w:
-                for j in range(0, len(line), w):
-                    if not draw_line(line[j:j + w]):
-                        break
-                    total_lines += 1
-                pointer += 1
-            elif len(line):
-                if not draw_line(line):
-                    break
-                total_lines += 1
-                pointer += 1
-
+            total_lines += 1
             i += 1
-
-        # remove does not work for multiline string
-        if h > pointer:
-            view.extend([(' ' * w) + '\033[0m'] * (h - pointer))
-
-        # fixme now I have processed lines need to loop throught them again and
-        # set selected row
-
-        return view
